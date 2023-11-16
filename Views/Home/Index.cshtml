@@ -1,0 +1,54 @@
+﻿@model SolutionsForBuisnesTestTask.Domain.ViewModels.HomeVM
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Orders</h1>
+    <ul>
+        <li>
+            <p><label asp-for="SelectedOrderId">Select order number:</label></p>
+            <select multiple id="SelectedOrderId" asp-for="SelectedOrderId" asp-items="Model.OrdersNumbers">
+                <option value="">-- Select Number --</option>
+        
+            </select>
+        </li>
+        <li>
+            <p><label asp-for="SelectedProviderId">Select provider:</label></p>
+            <select multiple id="SelectedProviderId" asp-for="SelectedProviderId" asp-items="Model.Providers">
+                <option value="">-- Select Provider --</option>
+
+            </select>
+        </li>
+        <li>
+            <p><label asp-for="ItemsNames">Select item name:</label></p>
+            <select multiple id="SelectedItemName" asp-for="SelectedItemName" asp-items="Model.ItemsNames">
+                <option value="">-- Select Name --</option>
+
+            </select>
+        </li>
+        <li>
+            <p><label asp-for="ItemsUnits">Select item unit:</label></p>
+            <select multiple id="SelectedItemUnit" asp-for="SelectedItemUnit" asp-items="Model.ItemsUnits">
+                <option value="">-- Select Unit --</option>
+
+            </select>
+        </li>
+        <li>
+        <label asp-for="StartDate">Start Date:</label>
+        <input id="StartDate" asp-for="StartDate" type="date" />
+
+        <label asp-for="EndDate">End Date:</label>
+        <input id="EndDate" asp-for="EndDate" type="date" />
+        </li>
+    </ul>
+    <button id="SubmitBtn" >Submit</button>
+
+<p>
+    <a asp-controller="Order" asp-action="CreateEdit">Create New</a>
+</p>
+<div id="OrdersContainer">
+    @await Html.PartialAsync("_OrdersTable", Model.Orders)
+</div>
+
+

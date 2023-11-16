@@ -1,0 +1,142 @@
+﻿@model SolutionsForBuisnesTestTask.Domain.ViewModels.OrderVM
+@if(Model.Order.Id==0)
+{
+    ViewData["Title"] = "Create Order";
+
+
+    <h1>Create Order</h1>
+}
+else
+{
+    ViewData["Title"] = "Edit Order";
+
+
+    <h1>Edit Order</h1>
+}
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        
+        <form asp-action="CreateEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="AntiForgeryTokenIdinput" asp-for="Order.Id" />
+            <div class="form-group">
+                <label asp-for="Order.Number" class="control-label"></label>
+                <input asp-for="Order.Number" class="form-control" />
+                <span asp-validation-for="Order.Number" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Date" class="control-label"></label>
+                <input asp-for="Order.Date" class="form-control" />
+                <span asp-validation-for="Order.Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Provider" class="control-label"></label>
+                <select asp-for="SelectedProviderId" class="form-control" asp-items="Model.Providers"></select>
+                <span asp-validation-for="SelectedProviderId" class="text-danger"></span>
+            </div>
+            
+            <hr />
+            <div>
+            <h4>Orders Items</h4>
+
+            <table id="ItemsTable">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th style="display: none;">OrderId</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @if(Model.Order.Id != 0)
+                    {
+                        foreach (var item in Model.Order.Items)
+                        {
+                            <tr id="ItemId_@item.Id">
+                                <td><label id="Id" type="number" asp-for="@item.Id" />@item.Id</td>
+                                <td style="display: none;"><label style="display: none;" id="Order_Id" type="number" asp-for="@item.OrderId" />@item.OrderId</td>
+                                <td><input id="Order_Name" type="text" asp-for="@item.Name" /></td>
+                                <td><input id="Order_Quantity" type="number" asp-for="@item.Quantity" /></td>
+                                <td><input id="Order_Unit" type="text" asp-for="@item.Unit" /></td>
+                                <td><button type="button" class="btn-danger deleteItemBtn" data-item-id="@item.Id">Delete</button></td>
+                            </tr>
+
+                        }
+                    }
+                    
+                </tbody>
+            </table>
+                <div id="NewRowContainer"></div>
+                <button type="button" id="AddItemBtn">Add Item</button>
+            <hr />
+            </div>
+            <div class="form-group">
+                <button type="button" id="SubmitBtn" class="btn btn-primary" >Save</button>
+            </div>
+            @if(Model.Order.Id !=0)
+            {
+                <div class="form-group">
+                    <button type="button" class="btn-danger " id="DeleteThisOrderBtn">Delete Order</button>
+                </div>
+            }
+           
+            
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back to List</a>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="~/js/edit_create_order.js" asp-append-version="true"></script>
+<script>
+    
+    $(document).ready(function () {
+        $("#DeleteThisOrderBtn").click(function () {
+            deleteOrder(@Model.Order.Id, NaN, '@Url.Action("Delete", "Order")')
+        });
+        var rowCount = -1;
+        $(".deleteItemBtn").click(function () {
+          
+            var itemId = $(this).data('item-id');
+            var row = $("#ItemId_" + itemId).closest('tr');
+            row.remove();
+            //sendData('@Url.Action("CreteEditPost", "Order")');
+        });
+        $("#SubmitBtn").click(function () {
+
+            sendData('@Url.Action("CreteEditPost", "Order")')
+        });
+
+        $("#AddItemBtn").click(function () {
+            var NewRowDataVM = {
+                rowCount: rowCount,
+                orderId: @Model.Order.Id
+            }
+            $.ajax({
+                url: '@Url.Action("GetItemRow", "Order")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(NewRowDataVM),
+                success: function (response) {
+                    rowCount--;
+                    console.log(rowCount)
+                    $("#tableBody").append(response);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    });
+</script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,24 @@
+﻿@model SolutionsForBuisnesTestTask.Domain.Models.OrderItem
+
+<tr id="ItemId_@Model.Id">
+    <td><label id="Id" type="number" asp-for="@Model.Id" />@Model.Id</td>
+    <td style="display: none;"><label style="display: none;" id="Order_Id" type="number" asp-for="@Model.OrderId" />@Model.OrderId</td>
+    <td><input id="Order_Name" type="text" asp-for="@Model.Name" /></td>
+    <td><input id="Order_Quantity" type="number" asp-for="@Model.Quantity" /></td>
+    <td><input id="Order_Unit" type="text" asp-for="@Model.Unit" /></td>
+    <td><button type="button" class="btn-danger deleteItemBtn" data-item-id="@Model.Id">Delete</button></td>
+</tr>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+       
+        var rowCount = -1;
+        $(".deleteItemBtn").click(function () {
+           
+            var itemId = $(this).data('item-id');
+            var row = $("#ItemId_" + itemId).closest('tr');
+            row.remove();
+        });
+    });
+</script>
